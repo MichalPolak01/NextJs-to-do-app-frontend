@@ -5,13 +5,18 @@ import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { useAuth } from "../authProvider"
 import { useRouter } from "next/navigation"
+import { LogoutAlertDialog } from "./LogoutAlertDialog"
+import { useState } from "react"
 
 
 export default function NavAccountDropdown() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
     const auth = useAuth()
     const router = useRouter()
 
     return (
+      <>
+      
         <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
@@ -22,11 +27,13 @@ export default function NavAccountDropdown() {
 
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>
-            {auth.username ? auth.username + "Account" : "Account"}
+            {auth.username ? auth.username + "'s Account" : "Account"}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={e => router.push("/logout")}>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <LogoutAlertDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
+      </>
     )
 }
