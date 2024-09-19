@@ -29,5 +29,6 @@ export async function POST(request: Request) {
         return NextResponse.json({"loggedIn": true, "username": username}, {status: 200})
     }
 
-    return NextResponse.json({"loggedIn": false, ...responseData}, {status: 400})
+    const {detail} = responseData
+    return NextResponse.json({"loggedIn": false, "detail": detail}, {status: 400})
 }

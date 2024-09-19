@@ -13,7 +13,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({className}: NavbarProps ) {
-    const finalClass = className ? className : "sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6"
+    const finalClass = className ? className : "sticky top-0 flex h-[7svh] items-center gap-4 border-b bg-background px-4 md:px-6"
     const auth = useAuth()
 
     return  (

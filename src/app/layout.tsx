@@ -36,7 +36,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              <BaseLayout className ="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40">
+              {/* <BaseLayout className ="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40"> */}
+              <BaseLayout className ="flex flex-1 flex-col bg-muted/40">
                 {children}
               </BaseLayout>              
             </AuthProvider>         
