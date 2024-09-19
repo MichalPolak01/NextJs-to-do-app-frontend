@@ -13,6 +13,7 @@ import {
   } from "@/components/ui/alert-dialog"
 import { useAuth } from "../authProvider"
 import React, { MouseEvent } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const LOGOUT_URL = "api/logout"
   
@@ -23,6 +24,7 @@ const LOGOUT_URL = "api/logout"
 
   export function LogoutAlertDialog({isDialogOpen, setIsDialogOpen} : LogoutAlertDialogProps) {
     const auth = useAuth()
+    const {toast} = useToast()
 
     const handleLogout = async(event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
@@ -39,6 +41,10 @@ const LOGOUT_URL = "api/logout"
 
         if (response.ok) {
             auth.logout()
+            toast ({
+                title: "Logout Successful",
+                description: "You have successfully logged out. See you soon!",
+              })
         }
     }
 
