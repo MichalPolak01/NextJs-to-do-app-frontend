@@ -38,20 +38,24 @@ export default function Page() {
 
             if (response.status === 401) {
                 auth.loginRequired()
-            }
-
-            if (response.ok) {
-                const data = await response.json()
-                setFormData({
-                    first_name: data.first_name || "",
-                    last_name: data.last_name || "",
-                    email: data.email || ""
+                toast({
+                    title: "Authentication failed",
+                    description: "You have to login to change your details"
                 })
             } else {
-                toast({
-                    title: "Error",
-                    description: "Failed to load user data"
-                })
+                if (response.ok) {
+                    const data = await response.json()
+                    setFormData({
+                        first_name: data.first_name || "",
+                        last_name: data.last_name || "",
+                        email: data.email || ""
+                    })
+                } else {
+                    toast({
+                        title: "Error",
+                        description: "Failed to load user data"
+                    })
+                }
             }
         }
 
@@ -74,7 +78,7 @@ export default function Page() {
         const response = await fetch(UPDATE_ACCOUNT_URL, requestOptions)
 
         interface UpdateAccountResponse {
-            email?: any
+            email?: {message: string}[]
         }
         let data: UpdateAccountResponse = {}
 
@@ -90,10 +94,12 @@ export default function Page() {
                 description: "Your account has been updated!"
             });
         } else {
-            setEmailError(data?.email?.[0].message? data?.email?.[0].message: "")
+            const emailError = data?.email?.[0]?.message ?? ""
+            setEmailError(emailError)
+
             toast({
                 title: "Error",
-                description: "Failed to update account."
+                description: `Failed to update account. ${emailError}`
             });
         }
     }

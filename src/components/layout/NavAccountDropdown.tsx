@@ -6,11 +6,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useAuth } from "../authProvider"
 import { LogoutAlertDialog } from "./LogoutAlertDialog"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
+
+const ACCOUNT_SETTINGS = "/account-settings"
+const CHANGE_PASSWORD = "/change-password"
 
 export default function NavAccountDropdown() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const auth = useAuth()
+  const router = useRouter()
 
   return (
     <>
@@ -26,8 +31,8 @@ export default function NavAccountDropdown() {
           <DropdownMenuLabel>
             {auth.username ? auth.username + "'s Account" : "Account"}
           </DropdownMenuLabel>
-          <DropdownMenuItem>Account settings</DropdownMenuItem>
-          <DropdownMenuItem>Change password</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push(ACCOUNT_SETTINGS)}>Account settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push(CHANGE_PASSWORD)}>Change password</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>Logout</DropdownMenuItem>
         </DropdownMenuContent>

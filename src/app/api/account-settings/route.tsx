@@ -4,12 +4,11 @@ import { NextResponse } from "next/server"
 import ApiProxy from "../proxy"
 
 
-
 const DJANGO_API_UPDATE_ACCOUNT_URL = "http://127.0.0.1:8000/api/user/edit"
-const DJANGO_API_GET_USER_DATA = "http://127.0.0.1:8000/api/user"
+const DJANGO_API_GET_USER_DATA_URL = "http://127.0.0.1:8000/api/user"
 
 export async function GET() {
-    const {data, status} = await ApiProxy.get(DJANGO_API_GET_USER_DATA, true)
+    const {data, status} = await ApiProxy.get(DJANGO_API_GET_USER_DATA_URL, true)
 
     return NextResponse.json(data, {status: status})
 }
