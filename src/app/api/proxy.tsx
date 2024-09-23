@@ -60,4 +60,18 @@ export default class ApiProxy {
 
         return await ApiProxy.handleFetch(endpoint, requestOptions)
     }
+
+    static async put(endpoint: string, object: any, requireAuth: boolean) {
+        const jsonData = JSON.stringify(object)
+
+        const headers = await ApiProxy.getHeaders(requireAuth)
+
+        const requestOptions = {
+            method: "PUT",
+            headers: headers,
+            body: jsonData
+        }
+
+        return await ApiProxy.handleFetch(endpoint, requestOptions)
+    }
 }

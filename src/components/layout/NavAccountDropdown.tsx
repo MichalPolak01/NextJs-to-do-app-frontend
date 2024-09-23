@@ -26,6 +26,8 @@ export default function NavAccountDropdown() {
           <DropdownMenuLabel>
             {auth.username ? auth.username + "'s Account" : "Account"}
           </DropdownMenuLabel>
+          <DropdownMenuItem>Account settings</DropdownMenuItem>
+          <DropdownMenuItem>Change password</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>Logout</DropdownMenuItem>
         </DropdownMenuContent>

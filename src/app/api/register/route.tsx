@@ -21,10 +21,10 @@ export async function POST(request: Request) {
     const responseData = await response.json()
 
     if (response.ok) {
-        return NextResponse.json({"registeredSucces": true}, {status: 200})
+        return NextResponse.json({"registeredSuccess": true}, {status: 200})
     }
 
     const emailMessage = responseData?.email?.[0]?.message || null
     const passwordMessage = responseData?.password?.[0].message || null
-    return NextResponse.json({"registeredSucces": false, "email": emailMessage, "password": passwordMessage}, {status: 400})
+    return NextResponse.json({"registeredSuccess": false, "email": emailMessage, "password": passwordMessage}, {status: 400})
 }
