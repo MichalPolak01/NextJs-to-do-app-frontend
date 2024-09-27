@@ -5,9 +5,9 @@ export const NavLinks = [
         href: "/",
     },
     {
-        label: "To-do",
+        label: "Tasks",
         authRequired: true,
-        href: "/to-do",
+        href: "/tasks",
     },
 ]
 
