@@ -1,8 +1,9 @@
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import Table from "./Table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { Tag } from "lucide-react";
+import DialogTaskForm from "./DialogTaskForm";
 
 
 
@@ -19,6 +20,7 @@ export default function Page() {
                         Add new task
                     </Button>
                 </DialogTrigger>
+                <DialogTaskForm method="POST" />
             </Dialog>
         </div>
          <Table />
