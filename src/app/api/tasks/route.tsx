@@ -23,7 +23,8 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     const requestData = await request.json()
-    const {data, status} = await ApiProxy.put(DJANGO_API_TASKS, requestData, true)
+    const {id} = requestData
+    const {data, status} = await ApiProxy.put(`${DJANGO_API_TASKS}/${id}`, requestData, true)
 
     return NextResponse.json({data}, {status: status})
 }

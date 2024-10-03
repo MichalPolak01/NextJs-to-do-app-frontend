@@ -16,6 +16,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/hooks/use-toast"
+import { useTasks } from "@/context/TaskContext"
+import { useAuth } from "@/components/authProvider"
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 
 const TASKS_URL = "api/tasks"
@@ -26,8 +29,12 @@ type DialogTaskFormProps = {
 }
 
 export default function DialogTaskForm({task: initialTask, method}: DialogTaskFormProps) {
-    const statuses = Object.values(Status)
-    const importances = Object.values(Importance)
+    const statuses = Object.keys(Status) as Array<keyof typeof Status>
+    const importances = Object.keys(Importance) as Array<keyof typeof Importance>
+    const {fetchTasks} = useTasks()
+    const auth = useAuth()
+    const [statusError, setStatusError] = useState("")
+    const [isOpen, setIsOpen] = useState(false);
     const [task, setTask] = useState<TaskType>(
         initialTask ||
         {
@@ -35,10 +42,10 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
             title: "",
             description: "",
             label: "",
-            status: "Backlog",
+            status: "BACKLOG",
             estimated_time: "01:00",
             execution_time: "00:00",
-            importance: "Medium",
+            importance: "LOW",
         }
     )
 
@@ -64,39 +71,73 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
 
         const response = await fetch(TASKS_URL, requestOptions)
 
-        if (response.ok) {
-          console.log("Add/Update success")
+        interface TaskResponse {
+          status?: {message: string}[]
+        }
+        let data: TaskResponse = {}
 
-          if (method === "POST"){
-            toast({
-              title: "Success",
-              description: "Your task has been created!"
-            });
-          } else if (method === "PUT"){
-            toast({
-              title: "Success",
-              description: "Your task has been updated!"
-            });
+        try {
+          data = await response.json()
+        } catch (error) {
 
-      } else {
-          // const emailError = data?.email?.[0]?.message ?? ""
-          // setEmailError(emailError)
-          console.log("Add/Update failed")
+        }
 
-          if (method === "POST") {
-            toast({
-              title: "Error",
-              description: `Failed to create task.`
-            });
-          } else if (method === "PUT") {
-            toast({
-              title: "Error",
-              description: `Failed to update task.`
-            });
-          }
+        if (response.status === 401) {
+          auth.loginRequired()
+          toast({
+              title: "Authentication failed",
+              description: "You have to login to change your details"
+          })
+        // } else if (response.status === 400) {
+        //   const statusError = data?.status?.[0]?.message ?? ""
+        //   setStatusError(statusError)
+        //   setIsOpen(true);
+        // }
+        
+        } else {
+          if (response.ok) {
+            console.log("Add/Update success")
+            fetchTasks()
+
+            if (method === "POST"){
+              toast({
+                title: "Success",
+                description: "Your task has been created!"
+              });
+            } else if (method === "PUT"){
+              toast({
+                title: "Success",
+                description: "Your task has been updated!"
+              });
+            }
+          } else {
+            const statusError = data?.status?.[0]?.message ?? ""
+            console.log(statusError)
+            setStatusError(statusError)
+            setIsOpen(true);
+            // setEmailError(emailError)
+
+            // TODO! ERROR STATUS
+
+            
+
+            console.log("Add/Update failed")
+
+            if (method === "POST") {
+              toast({
+                title: "Error",
+                description: `Failed to create task.`
+              });
+            } else if (method === "PUT") {
+              toast({
+                title: "Error",
+                description: `Failed to update task.`
+              });
+            }
+        }
       }
     }
-  }
+
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setTask({
@@ -113,6 +154,7 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
     }
 
     return (
+      <>
         <DialogContent className="sm:max-w-[50rem] bg-black border-2 border-cyan-500">
         <DialogHeader>
           <DialogTitle>Add new task</DialogTitle>
@@ -155,7 +197,7 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
                 <SelectContent>
                     <SelectGroup>
                         {statuses.map((status) => (
-                            <SelectItem key={status} value={status}>{status}</SelectItem>
+                            <SelectItem key={status} value={status}>{Status[status]}</SelectItem>
                         ))}
                     </SelectGroup>
                 </SelectContent>
@@ -173,7 +215,7 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
                 <SelectContent>
                     <SelectGroup>
                         {importances.map((importance) => (
-                            <SelectItem key={importance} value={importance}>{importance}</SelectItem>
+                            <SelectItem key={importance} value={importance}>{Importance[importance]}</SelectItem>
                         ))}
                     </SelectGroup>
                 </SelectContent>
@@ -184,8 +226,17 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
             <Label htmlFor="estimated_time" className="text-right">
               Estimated time
             </Label>
-            <Input id="estimated_time" value={task?.estimated_time} name="estimated_time" onChange={handleChange} className="col-span-3" />
+            <Input id="estimated_time" type="time" value={task?.estimated_time} name="estimated_time" onChange={handleChange} className="col-span-3" />
           </div>
+
+          {method === "PUT" && 
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="execution_time" className="text-right">
+                Execution time
+              </Label>
+              <Input id="execution_time" type="time" value={task?.execution_time} name="execution_time" onChange={handleChange} className="col-span-3" />
+            </div>
+          }
 
         </div>
         <DialogFooter>
@@ -193,5 +244,23 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
         </DialogFooter>
         </form>
       </DialogContent>
+      
+      {/* {statusError &&  */}
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Update/Add Error</AlertDialogTitle>
+                <AlertDialogDescription>
+                    {statusError}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogAction onClick={() => setIsOpen(false)}>OK</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* } */}
+      </>
     )
 }
