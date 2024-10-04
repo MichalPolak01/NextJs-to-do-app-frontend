@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/themeProvider";
 import BaseLayout from "@/components/layout/BaseLayout";
 import { AuthProvider } from "@/components/authProvider";
 import { Toaster } from "@/components/ui/toaster";
-import { TaskProvider } from "@/context/TaskContext";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,13 +38,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <AuthProvider>
-              {/* <TaskProvider> */}
-              {/* <BaseLayout className ="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40"> */}
                 <BaseLayout className ="flex flex-1 flex-col bg-muted/40">
                   {children}
                   <Toaster />
                 </BaseLayout>    
-              {/* </TaskProvider>           */}
             </AuthProvider>         
         </ThemeProvider>
       </body>

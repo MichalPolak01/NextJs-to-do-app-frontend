@@ -6,15 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Tag } from "lucide-react";
 import DialogTaskForm from "./DialogTaskForm";
-import { TaskProvider } from "@/context/TaskContext";
+import { useTasks } from "@/context/TaskContext";
 import Stopwatch from "./Timer";
+import { useAuth } from "@/components/authProvider";
+import { useEffect } from "react";
 
 
 export default function Page() {
-    
+    const auth = useAuth()
+    const { fetchTasks, tasks } = useTasks()
+
+    useEffect(() => {
+        fetchTasks()
+    }, [auth])
+
+    const getInProgressTask = () => {
+        return tasks.filter((task) => task.status === "IN_PROGRESS")
+    }
+
+
     return (
         <>
-        <TaskProvider>
             <div className="h-[6svh] flex justify-around items-center">
                 <Dialog>
                     <DialogTrigger asChild>
@@ -24,10 +36,10 @@ export default function Page() {
                     </DialogTrigger>
                     <DialogTaskForm method="POST" />
                 </Dialog>
-                <Stopwatch />
+                <Stopwatch task={getInProgressTask()} />
             </div>
             
-                <Table />
+                <Table tasks={tasks} />
             
             <div className="h-[7svh] flex justify-center items-center gap-4">
                 <Card className="w-max h-[4svh] px-8 border-cyan-900 border-2 flex justify-center items-center gap-4">
@@ -39,7 +51,6 @@ export default function Page() {
                     </ul>
                 </Card>
             </div>
-         </TaskProvider>
         </>
     )
 }

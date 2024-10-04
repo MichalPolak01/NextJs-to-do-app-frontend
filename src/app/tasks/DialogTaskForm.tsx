@@ -56,84 +56,70 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
     }, [initialTask])
 
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault()
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
 
-        console.log(task)
+    console.log(task)
 
-        const requestOptions = {
-          method: method,
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(task)
-        }
+    const requestOptions = {
+      method: method,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(task)
+    }
 
-        const response = await fetch(TASKS_URL, requestOptions)
+    const response = await fetch(TASKS_URL, requestOptions)
 
-        interface TaskResponse {
-          status?: {message: string}[]
-        }
-        let data: TaskResponse = {}
+    interface TaskResponse {
+      status?: {message: string}[]
+    }
+    let data: TaskResponse = {}
 
-        try {
-          data = await response.json()
-        } catch (error) {
+    try {
+      data = await response.json()
+    } catch (error) {
 
-        }
+    }
 
-        if (response.status === 401) {
-          auth.loginRequired()
+      if (response.status === 401) {
+        auth.loginRequired()
+        toast({
+            title: "Authentication failed",
+            description: "You have to login to change your details"
+        })      
+
+      } else if (response.ok) {
+          fetchTasks()
+
+          if (method === "POST"){
+            toast({
+              title: "Success",
+              description: "Your task has been created!"
+            });
+          } else if (method === "PUT"){
+            toast({
+              title: "Success",
+              description: "Your task has been updated!"
+            });
+          }
+      } else {
+        // TODO
+        const errorStatus = data?.status?.[0]?.message ?? "An error occurred.";
+        console.log(errorStatus)
+        setStatusError(errorStatus)
+        setIsOpen(true);          
+
+        if (method === "POST") {
           toast({
-              title: "Authentication failed",
-              description: "You have to login to change your details"
-          })
-        // } else if (response.status === 400) {
-        //   const statusError = data?.status?.[0]?.message ?? ""
-        //   setStatusError(statusError)
-        //   setIsOpen(true);
-        // }
-        
-        } else {
-          if (response.ok) {
-            console.log("Add/Update success")
-            fetchTasks()
-
-            if (method === "POST"){
-              toast({
-                title: "Success",
-                description: "Your task has been created!"
-              });
-            } else if (method === "PUT"){
-              toast({
-                title: "Success",
-                description: "Your task has been updated!"
-              });
-            }
-          } else {
-            const statusError = data?.status?.[0]?.message ?? ""
-            console.log(statusError)
-            setStatusError(statusError)
-            setIsOpen(true);
-            // setEmailError(emailError)
-
-            // TODO! ERROR STATUS
-
-            
-
-            console.log("Add/Update failed")
-
-            if (method === "POST") {
-              toast({
-                title: "Error",
-                description: `Failed to create task.`
-              });
-            } else if (method === "PUT") {
-              toast({
-                title: "Error",
-                description: `Failed to update task.`
-              });
-            }
+            title: "Error",
+            description: `Failed to create task.`
+          });
+        } else if (method === "PUT") {
+          toast({
+            title: "Error",
+            description: `Failed to update task.`
+          });
         }
       }
     }
@@ -157,9 +143,19 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
       <>
         <DialogContent className="sm:max-w-[50rem] bg-black border-2 border-cyan-500">
         <DialogHeader>
-          <DialogTitle>Add new task</DialogTitle>
+          <DialogTitle>
+            {method === "PUT"? 
+              "Update task"
+              :
+              "Add new task"
+            }
+          </DialogTitle>
           <DialogDescription>
-            {/* Make changes to your profile here. Click save when you're done. */}
+            {method === "PUT"?
+              "Make changes in the task. Click update when you're done."
+              :
+              "Create new task. Click save when you're done."
+            }
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -240,14 +236,19 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
 
         </div>
         <DialogFooter>
-          <Button type="submit">Add task</Button>
+          <Button type="submit">
+            {method === "PUT"?
+              "Update task"
+              :
+              "Save task"  
+            }
+          </Button>
         </DialogFooter>
         </form>
       </DialogContent>
       
-      {/* {statusError &&  */}
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-stone-950">
             <AlertDialogHeader>
                 <AlertDialogTitle>Update/Add Error</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -259,8 +260,6 @@ export default function DialogTaskForm({task: initialTask, method}: DialogTaskFo
             </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* } */}
       </>
     )
 }

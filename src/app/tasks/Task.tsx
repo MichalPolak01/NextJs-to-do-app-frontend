@@ -22,20 +22,21 @@ export default function Task({task}: TaskProps ) {
                         <CardDescription>{task.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-1">
-                            <h4 className="text-md font-bold text-center leading-none">Time</h4>
+                        <Separator className="mb-4" />
+                        <div className="space-y-1 mb-2">
+                            <h4 className="text-md font-bold text-center leading-none">Time:</h4>
                         </div>
-                        <Separator className="my-4" />
+                        
                         <div className="flex h-5 items-center justify-around space-x-4 text-sm">
                             <div>Estimated:</div>
-                            <Separator orientation="vertical" />
-                            <div>{task.execution_time}</div>
-                        </div>
-                        <Separator className="my-4" />
-                        <div className="flex h-5 items-center justify-around space-x-4 text-sm">
-                            <div>Execution:</div>
-                            <Separator orientation="vertical" />
+                            {/* <Separator orientation="vertical" /> */}
                             <div>{task.estimated_time}</div>
+                        </div>
+                        {/* <Separator className="my-4" /> */}
+                        <div className="flex h-5 items-center justify-around space-x-4 text-sm mt-2">
+                            <div>Execution:</div>
+                            {/* <Separator orientation="vertical" /> */}
+                            <div>{task.execution_time}</div>
                         </div>
                     </CardContent>
                 </Card>
